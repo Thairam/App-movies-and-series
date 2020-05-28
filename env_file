@@ -1,0 +1,4 @@
+module.exports = {
+    authSecret: '',
+    mongodb_knowledge_stats_url: ''
+}
