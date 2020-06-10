@@ -6,4 +6,5 @@ module.exports = app => {
     app.route('/users/:id')
         .get(app.api.user.getById)
         .patch(app.api.user.update)
+        .delete(app.api.user.remove)
 }

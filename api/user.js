@@ -31,8 +31,14 @@ module.exports = app => {
             .limit(limit)
             .skip((page <= 0 ? 0 : page - 1) * limit)
             .then(users => {
-                const newUsers = users.map(user => organizeFields(user))
-                res.status(200).json(newUsers)
+                const body = { users: [], count: 0 }
+                body.users = users.map(user => organizeFields(user))
+
+                User.countDocuments()
+                    .then(amount => {
+                        body.count = amount
+                        res.status(200).json(body)
+                    })
             })
             .catch(err => res.status(400).json(err))
     }
@@ -41,6 +47,12 @@ module.exports = app => {
         User.findOne({ _id: req.params.id })
             .then(user => res.status(200).json(user ? organizeFields(user) : next()))
             .catch(_ => res.status(404).send('Usuário não encontrado'))
+    }
+
+    const remove = (req, res) => {
+        User.deleteOne({ _id: req.params.id })
+            .then(_ => res.status(204).send({}))
+            .catch(err => res.status(500).send(err))
     }
 
     function mongoDBErrorListener(err) {
@@ -66,5 +78,5 @@ module.exports = app => {
         return obj
     }
 
-    return { save, update, get, getById }
+    return { save, update, get, getById, remove }
 }
